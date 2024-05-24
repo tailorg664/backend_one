@@ -5,17 +5,17 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/APIResponse.js";
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
-  const { username, email, fullname, password } = req.body;
-  console.log("email; ", email);
+  const { userName, email, fullName, password } = req.body;
+  // console.log("email; ", email);
 
   if (
-    [fullName, email, username, password].some((field) => field?.trim() === "")
+    [fullName, email, userName, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
   const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
+    $or : [{ userName }, { email }]
   });
 
   if (existedUser) {
@@ -26,18 +26,18 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) {
     throw new ApiError(400,"Avatar file is required");
   }
-  const avatar = await uploadOnCloudinary(avatarLocalPath)
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-  if (!avatar) {
+  const Avatar = await uploadOnCloudinary(avatarLocalPath)
+  const CoverImage = await uploadOnCloudinary(coverImageLocalPath)
+  if (!Avatar) {
     throw new ApiError(400, "Avatar file is required");
   }
   const user = User.create({
-    fullname,
-    avatar: avatar.url,
-    coverImage: coverImage?.url||"",
+    fullName,
+    avatar: Avatar.url,
+    coverImage: CoverImage?.url||"",
     email,
     password,
-    username:username.tolowercase()
+    username:userName.toLowerCase()
   })
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
