@@ -14,6 +14,6 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-mongoose.set("debug", true);
+
 
 export default connectDB;
